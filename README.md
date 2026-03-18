@@ -50,15 +50,13 @@ These steps were necessary because the raw data, being sourced from government r
 
 ### Head of Cleaned DataFrame
 
-| YEAR | MONTH | U.S._STATE | NERC.REGION | CLIMATE.CATEGORY | CAUSE.CATEGORY | OUTAGE.DURATION | CUSTOMERS.AFFECTED | SEVERITY | HOUR |
-|---|---|---|---|---|---|---|---|---|---|
-| 2011 | 7 | Minnesota | MRO | normal | severe weather | 3060 | 70000 | 0.1426 | 17 |
-| 2010 | 10 | Minnesota | MRO | cold | severe weather | 3000 | 70000 | 0.1413 | 20 |
-| 2012 | 6 | Minnesota | MRO | normal | severe weather | 2550 | 68200 | 0.1236 | 23 |
-| 2015 | 7 | Minnesota | MRO | warm | severe weather | 1740 | 250000 | 0.3305 | 2 |
-| 2010 | 11 | Minnesota | MRO | cold | severe weather | 1860 | 60000 | 0.1233 | 8 |
-
-> *Note: Run `print(df.head().to_markdown(index=False))` in your notebook and paste the exact output here before publishing.*
+|   YEAR |   MONTH | U.S._STATE   | CAUSE.CATEGORY   |   OUTAGE.DURATION |   CUSTOMERS.AFFECTED |   SEVERITY |
+|-------:|--------:|:-------------|:-----------------|------------------:|---------------------:|-----------:|
+|   2011 |       7 | Minnesota    | severe weather   |              3060 |                70000 |  0.0835048 |
+|   2010 |      10 | Minnesota    | severe weather   |              3000 |                70000 |  0.0822909 |
+|   2012 |       6 | Minnesota    | severe weather   |              2550 |                68200 |  0.0726313 |
+|   2015 |       7 | Minnesota    | severe weather   |              1740 |               250000 |  0.11233   |
+|   2010 |      11 | Minnesota    | severe weather   |              1860 |                60000 |  0.0561416 |
 
 ### Univariate Analysis
 
@@ -276,4 +274,3 @@ The final model improves on every metric. Most importantly, R² moves from negat
   frameborder="0"
 ></iframe>
 
-> *Note: The fairness permutation plot currently uses matplotlib. To embed it as an interactive iframe, re-generate it with plotly (`px.histogram`) and save with `fig.write_html("assets/fairness-permutation.html", include_plotlyjs="cdn")`.*
