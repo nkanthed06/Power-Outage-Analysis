@@ -104,15 +104,17 @@ The table below shows the **mean outage duration (minutes)** and **mean customer
 | system operability disruption | 543.8 | 210,561.7 |
 
 This table shows a lot of interesting things: **fuel supply emergencies** last the longest on average (over 11 days!) but affect almost no customers this is most likely because they are managed through controlled load reduction rather than a sudden failure. Meanwhile, **severe weather** and **system operability disruptions** have extremely high average customers affected, making them the most socially impactful causes even though duration is lower. 
+
+
 ---
 
 ## Assessment of Missingness
 
 ### MNAR Column
 
-I believe `OUTAGE.DURATION` is **MNAR** (Missing Not At Random). The reasoning is that outage duration is sometimes unreported precisely because the outage itself was unusual, contentious, or administratively complex — for instance, fuel supply emergencies or events that were eventually disputed as "outages." Utilities may be less likely to report duration for events where the restoration timeline was ambiguous or politically sensitive. The missingness is therefore related to the value of the duration itself (very long or abnormal events going unreported), which is the defining characteristic of MNAR.
+I believe `OUTAGE.DURATION` is **MNAR** (Missing Not At Random). The reasoning is that outage duration is sometimes unreported because the outage itself was unusual or problematic. Utilities may be less likely to report duration for events where the restoration timeline was not known. The missingness is therefore related to the value of the duration itself (very long events would be unreported), which is the defining characteristic of MNAR.
 
-To convert this to MAR, one would ideally have access to reporting logs from individual utility companies — specifically, whether a utility filed a full DOE report or a partial one. If missingness is predictable from the utility's filing type rather than the outage's actual duration, the mechanism would shift to MAR.
+To make this MAR, we would need data on how each utility company filed their report more specifically, whether they submitted a complete report or an incomplete one. If we could predict which duration values are missing just by looking at the filing type, then the missingness would depend on something we can observe and measure, which would make it MAR instead of MNAR.
 
 ### Missingness Permutation Tests
 
@@ -132,7 +134,7 @@ To convert this to MAR, one would ideally have access to reporting logs from ind
   frameborder="0"
 ></iframe>
 
-The plot shows the proportion of missing `OUTAGE.DURATION` values broken down by cause category. Certain categories — particularly fuel supply emergency — have disproportionately high rates of missing duration, supporting the MNAR hypothesis.
+The plot shows the proportion of missing `OUTAGE.DURATION` values broken down by cause category. Certain categories particularly fuel supply emergency have disproportionately high rates of missing duration, supporting the MNAR hypothesis.
 
 ---
 
