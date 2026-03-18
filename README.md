@@ -6,20 +6,20 @@ Final Project for DSC 80
 
 ## Introduction
 
-This project analyzes a dataset of major power outages that occurred across the United States from 2000 to 2016. The data was compiled from publicly available reports by the Department of Energy and tracks outage events across a wide range of geographic regions, climate zones, and causes.
+This project uses a dataset of major power outages that happened across the United States from 2000 to 2016. The data was compiled from publicly available reports by the Department of Energy and tracks outage events across a wide range of factors.
 
-**Central Question**: *How does the cause of a power outage affect its severity — measured by outage duration and the number of customers affected?*
+**Central Question**: *How does the cause of a power outage affect its severity which is measured by outage duration and the number of customers affected?*
 
-Understanding this question matters because power outages have cascading effects on public safety, economic activity, and critical infrastructure. If we can identify which types of outage causes consistently produce longer and more damaging events, utility operators, emergency managers, and policymakers can allocate resources more effectively — prioritizing prevention and faster response for the most dangerous categories.
+Understanding this question matters because power outages have many effects on public safety, economic activity, and critical infrastructure. If we can identify which types of outage causes cause longer and more damaging events management can more effectively allocate resources which would prioritizing prevention and a much faster response for the most dangerous categories.
 
-The dataset contains **1,534 rows** (outage events) and 56 columns. The columns most relevant to this analysis are:
+The dataset contains **1,534 rows** (all of which are outage events) and 56 columns(all of which describe each outage). I have exrtracted the columns most relevant to this analysis which are:
 
 | Column | Description |
 |---|---|
 | `CAUSE.CATEGORY` | The high-level category of what caused the outage (e.g., severe weather, intentional attack, equipment failure) |
 | `OUTAGE.DURATION` | Total duration of the outage, in minutes |
 | `CUSTOMERS.AFFECTED` | Number of customers who lost power during the outage |
-| `NERC.REGION` | The North American Electric Reliability Corporation region where the outage occurred |
+| `NERC.REGION` | The North American Electric Reliability Corporation region where the outage occurred (stated in codes)|
 | `CLIMATE.CATEGORY` | The climate classification for the state at the time of the outage (warm, normal, cold) |
 | `OUTAGE.START.DATE` / `OUTAGE.START.TIME` | The date and time the outage began |
 | `OUTAGE.RESTORATION.DATE` / `OUTAGE.RESTORATION.TIME` | The date and time power was restored |
@@ -33,7 +33,7 @@ The dataset contains **1,534 rows** (outage events) and 56 columns. The columns 
 
 ### Data Cleaning
 
-The raw Excel file required several cleaning steps before analysis:
+The raw Excel file was put through many cleaning steps before we could start our analysis:
 
 1. **Stripped column names**: Leading and trailing whitespace was removed from all column headers to prevent key errors.
 2. **Replaced string `"NA"` with `NaN`**: The raw file used the string `"NA"` for missing values instead of true nulls; these were replaced with `np.nan` for proper handling.
@@ -46,7 +46,7 @@ The raw Excel file required several cleaning steps before analysis:
 9. **Engineered a `SEVERITY` metric**: Outage duration and customers affected were each normalized to [0, 1] by dividing by their column maxima, then summed into a single `SEVERITY` score. This composite allows severity to be compared across outages of different types.
 10. **Fixed `ANOMALY.LEVEL`**: Ensured this column was numeric, coercing any remaining strings to `NaN`.
 
-These steps were necessary because the raw data, being sourced from government reports compiled into Excel, contained formatting rows, mixed types, and inconsistently encoded missingness. Dropping rows with missing key columns reduces the dataset but ensures the analysis is not distorted by imputed or estimated values for the core variables.
+These steps were necessary because the raw data had many incorrectly formatted rows, mixed types, and a lot of missingness. Dropping rows with missing key columns does shrink the dataset however does not change any of the values.
 
 ### Head of Cleaned DataFrame
 
@@ -67,7 +67,7 @@ These steps were necessary because the raw data, being sourced from government r
   frameborder="0"
 ></iframe>
 
-The bar chart above shows the distribution of outage causes across all events in the dataset. **Severe weather** is by far the most common cause, accounting for nearly half of all recorded outages. Intentional attacks are the second most frequent, though they are considerably less common. This distribution is important context — any model or test that treats all cause categories equally must contend with this imbalance.
+The bar chart above shows the distribution of outage causes across all the seperate events in the dataset. **Severe weather** is by far the most common cause of these outages, accounting for almost half of all recorded outages. Intentional attacks are the second most common, though they are much less common compared to severe weather. This distribution is very important context because if a model considers all causes to hold the same weight for the severity of the outage then the model will not be accurate.
 
 <iframe
   src="assets/outage-duration-hist.html"
@@ -76,7 +76,7 @@ The bar chart above shows the distribution of outage causes across all events in
   frameborder="0"
 ></iframe>
 
-The histogram of `OUTAGE.DURATION` reveals a heavily right-skewed distribution, with the vast majority of outages resolved within a few thousand minutes but a long tail of extreme events stretching into the tens of thousands of minutes. This skew motivates careful consideration of which statistical tests and model evaluations are appropriate, as mean-based metrics will be pulled by outliers.
+The histogram of `OUTAGE.DURATION` shows a right-skewed distribution, with most of the outages resolved within a few thousand minutes(less than a day) but a long tail of extreme events stretching into the tens of thousands of minutes(around a week). 
 
 ### Bivariate Analysis
 
@@ -87,7 +87,7 @@ The histogram of `OUTAGE.DURATION` reveals a heavily right-skewed distribution, 
   frameborder="0"
 ></iframe>
 
-The box plot compares outage duration across cause categories. **Fuel supply emergencies** stand out with an extremely high median duration and wide spread, suggesting these events are logistically complex and slow to resolve. Severe weather also shows high variability. Intentional attacks, by contrast, tend to be shorter in duration despite being frequent — likely because they are identified and addressed quickly.
+The box plot compares outage duration across cause categories. **Fuel supply emergencies** stand out with an extremely high median duration and wide spread, suggesting these events are logistically complex and take very long to resolve. Severe weather also shows high variability. Intentional attacks, by contrast, tend to be shorter in duration this is most likely because they are identified and resolve very quickly.
 
 ### Interesting Aggregates
 
@@ -103,8 +103,7 @@ The table below shows the **mean outage duration (minutes)** and **mean customer
 | severe weather | 3,937.2 | 188,490.4 |
 | system operability disruption | 543.8 | 210,561.7 |
 
-This table reveals a striking divergence: **fuel supply emergencies** last the longest on average (over 11 days!) but affect almost no customers — likely because they are managed through controlled load reduction rather than a sudden failure. Meanwhile, **severe weather** and **system operability disruptions** have extremely high average customers affected, making them the most socially impactful causes even when duration is lower. This interplay between duration and scale is exactly why the composite `SEVERITY` score is a more informative target than either metric alone.
-
+This table shows a lot of interesting things: **fuel supply emergencies** last the longest on average (over 11 days!) but affect almost no customers this is most likely because they are managed through controlled load reduction rather than a sudden failure. Meanwhile, **severe weather** and **system operability disruptions** have extremely high average customers affected, making them the most socially impactful causes even though duration is lower. 
 ---
 
 ## Assessment of Missingness
