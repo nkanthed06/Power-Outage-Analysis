@@ -144,7 +144,7 @@ The plot shows the proportion of missing `OUTAGE.DURATION` values broken down by
 - **Alternative Hypothesis (H₁)**: The distributions differ.
 - **Observed TVD**: 0.223 | **p-value**: 0.12
 
-**Conclusion**: We **fail to reject the null hypothesis**. The month of an outage does not appear to be related to whether duration is missing — missingness is not a seasonal phenomenon.
+**Conclusion**: We **fail to reject the null hypothesis**. The month of an outage does not appear to be related to whether duration is missing this implies missingness is not related to the season.
 
 ---
 
@@ -152,13 +152,13 @@ The plot shows the proportion of missing `OUTAGE.DURATION` values broken down by
 
 **Question**: Does the cause of a power outage significantly affect its severity?
 
-- **Null Hypothesis (H₀)**: The distribution of outage severity is the same across all cause categories. Any observed differences are due to random chance.
-- **Alternative Hypothesis (H₁)**: The distribution of outage severity differs across cause categories.
-- **Test Statistic**: The difference between the maximum and minimum group mean severity across all cause categories (i.e., the range of group means). This statistic is appropriate because it directly captures how much the "best" and "worst" cause categories diverge in terms of severity.
+- **Null Hypothesis (H₀)**: The distribution of outage severity is the same across all of the cause categories. Any differences are due to random chance.
+- **Alternative Hypothesis (H₁)**: The distribution of outage severity differs across all of the cause categories.
+- **Test Statistic**: The difference between the maximum and minimum group mean severity across all cause categories (the range of group means). This statistic is the best because it captures how much the "best" and "worst" cause categories differ when it comes to severity.
 - **Significance Level**: α = 0.05
 - **p-value**: 0.001
 
-**Conclusion**: Since the p-value (0.001) is well below 0.05, we **reject the null hypothesis**. The data suggests that outage cause and severity are not independent — different causes are associated with meaningfully different severity levels. This does not prove a causal mechanism; rather, it provides statistical evidence that the relationship between cause and severity is unlikely to be explained by chance alone.
+**Conclusion**: Since the p-value (0.001) is well below 0.05, we **reject the null hypothesis**. The data shows that outage cause and severity are not independent. This does not prove a lot; instead, it gives statistical evidence that the relationship between cause and severity is not likely to be explained by only chance.
 
 <iframe
   src="assets/hypothesis-permutation.html"
@@ -167,17 +167,17 @@ The plot shows the proportion of missing `OUTAGE.DURATION` values broken down by
   frameborder="0"
 ></iframe>
 
-The histogram shows the permutation distribution of the test statistic (range of group means) under the null hypothesis. The red vertical line marks the observed statistic, which falls far into the right tail — visually confirming how extreme the result is under the null.
+The histogram shows the permutation distribution of the test statistic (range of the group means) under the null hypothesis. The red vertical line marks the observed statistic, which falls far into the right tail. This confirms how extreme the result is under the null.
 
 ---
 
 ## Framing a Prediction Problem
 
-**Prediction Problem**: Predict the **severity** of a power outage given information available at or near the time the outage begins.
+**Prediction Problem**: Predict the **severity** of a power outage given information available around the time the outage begins.
 
-- **Type**: Regression (severity is a continuous numeric value)
-- **Response Variable**: `SEVERITY` — a composite of normalized outage duration and normalized customers affected. This was chosen over either individual metric because it captures both the time dimension and the social impact dimension of an outage in a single value, making it a more complete proxy for "how bad was this event?"
-- **Evaluation Metric**: Root Mean Squared Error (RMSE). RMSE is preferred over raw MSE because it is expressed in the same units as severity, making it easier to interpret. It is preferred over MAE because it penalizes large errors more heavily, which is appropriate here: severely under-predicting a major outage is much worse than under-predicting a small one.
+- **Type**: Regression (since severity is a continuous numeric value)
+- **Response Variable**: `SEVERITY` — a combination of [normalized outage duration] and [normalized customers affected]. This was chosen over either of the metrics because it grabs both the time and the social impact of an outage in one value, making it the best value to show "how bad was this outage?"
+- **Evaluation Metric**: Root Mean Squared Error (RMSE). RMSE is preferred over raw Mean Squared Error (MSE) because it has the same units as severity. It is preferred over MAE because it accounts for large errors more heavily. Which is exactly what we need. Severely under predicting a major outage would be much worse than under predicting a small one.
 
 **Justification of features used at prediction time**: The features used — cause category, NERC region, climate category, month, and hour — are all known at or shortly after the outage begins. Duration and customers affected are *outcomes* that unfold over the course of the event, so they are appropriately excluded from the model. This respects the real-world prediction setting where a dispatcher needs an early severity estimate to allocate resources.
 
